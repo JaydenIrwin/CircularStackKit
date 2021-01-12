@@ -1,4 +1,4 @@
-# CircularStackView
+# CircularStackKit
 
 A SwiftUI view that organizes it's children on a circular path. 
 
