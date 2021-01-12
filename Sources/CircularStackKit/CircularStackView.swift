@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CircularStackView<Content: View>: View {
+public struct CircularStackView<Content: View>: View {
     
     var startAngle: CGFloat
     var endAngle: CGFloat
@@ -11,7 +11,7 @@ struct CircularStackView<Content: View>: View {
     
     let content: (Int) -> Content
     
-    var body: some View {
+    public var body: some View {
         ZStack {
             ForEach(0..<childOffsets.count) { index in
                 content(index)
@@ -22,7 +22,7 @@ struct CircularStackView<Content: View>: View {
         .frame(width: radius*2, height: radius*2)
     }
     
-    init(childCount: Int, startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, keepChildrenUpright: Bool, uprightChildZRotation: Double = 0.0, @ViewBuilder content: @escaping (Int) -> Content) {
+    public init(childCount: Int, startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, keepChildrenUpright: Bool, uprightChildZRotation: Double = 0.0, @ViewBuilder content: @escaping (Int) -> Content) {
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.radius = radius
