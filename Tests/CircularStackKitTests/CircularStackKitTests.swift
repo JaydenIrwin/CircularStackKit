@@ -1,5 +1,5 @@
 import XCTest
-@testable import CircularStackView
+//@testable import CircularStackKit
 
 final class CircularStackViewTests: XCTestCase {
     func testExample() {
