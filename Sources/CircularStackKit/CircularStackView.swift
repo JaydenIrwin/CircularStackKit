@@ -38,8 +38,8 @@ public struct CircularStackView: View {
         .frame(width: radius*2, height: radius*2)
     }
     
-    public init<Content: View>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: () -> Content) {
-        self.views = [AnyView(content())]
+    public init<Content: View>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: NormalContent<Content>) {
+        self.views = ViewExtractor.getViews(from: content)
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.radius = radius
@@ -51,7 +51,7 @@ public struct CircularStackView: View {
         self.childPositions = [ChildPosition(offset: offset, upIsOutwardAngle: Angle(radians: rotationAngle))]
     }
     
-    public init<Views>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: ViewContent<Views>) {
+    public init<Views>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: TupleContent<Views>) {
         self.views = ViewExtractor.getViews(from: content)
         self.startAngle = startAngle
         self.endAngle = endAngle
