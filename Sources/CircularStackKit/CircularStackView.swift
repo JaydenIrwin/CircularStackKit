@@ -12,11 +12,26 @@ public struct CircularStackView: View {
     }
     
     private var views: [AnyView]
-    var startAngle: CGFloat
-    var endAngle: CGFloat
+    var startAngle: Angle
+    var endAngle: Angle
     var radius: CGFloat
     var childRotationMode: ChildRotationMode
-    let childPositions: [ChildPosition]
+    var childPositions: [ChildPosition] {
+        var denominator = Double(views.count)
+        let diffFrom2PI = abs(abs((endAngle - startAngle).radians) - .pi*2)
+        if 0.01 < diffFrom2PI {
+            denominator -= 1.0
+        }
+        let angleStep = Angle(radians: (1.0 / denominator) * (endAngle - startAngle).radians)
+        var positions = [ChildPosition]()
+        for index in 0..<views.count {
+            let offsetAngle = startAngle + (angleStep * Double(index))
+            let offset = CGSize(width: radius * CGFloat(cos(offsetAngle.radians)), height: radius * CGFloat(sin(offsetAngle.radians)))
+            let rotationAngle = offsetAngle.radians + .pi/2
+            positions.append(ChildPosition(offset: offset, upIsOutwardAngle: Angle(radians: rotationAngle)))
+        }
+        return positions
+    }
     
     public var body: some View {
         ZStack {
@@ -38,41 +53,20 @@ public struct CircularStackView: View {
         .frame(width: radius*2, height: radius*2)
     }
     
-    public init<Content: View>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: NormalContent<Content>) {
+    public init<Content: View>(startAngle: Angle = .radians(-.pi*1.5), endAngle: Angle = .radians(.pi/2), radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: NormalContent<Content>) {
         self.views = ViewExtractor.getViews(from: content)
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.radius = radius
         self.childRotationMode = childRotation
-        
-        let offsetAngle = (startAngle + endAngle) / 2
-        let offset = CGSize(width: radius * cos(offsetAngle), height: radius * sin(offsetAngle))
-        let rotationAngle = Double(offsetAngle) + .pi/2
-        self.childPositions = [ChildPosition(offset: offset, upIsOutwardAngle: Angle(radians: rotationAngle))]
     }
     
-    public init<Views>(startAngle: CGFloat = -.pi*1.5, endAngle: CGFloat = .pi/2, radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: TupleContent<Views>) {
+    public init<Views>(startAngle: Angle = .radians(-.pi*1.5), endAngle: Angle = .radians(.pi/2), radius: CGFloat, childRotation: ChildRotationMode = .none, @ViewBuilder content: TupleContent<Views>) {
         self.views = ViewExtractor.getViews(from: content)
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.radius = radius
         self.childRotationMode = childRotation
-        
-        var denominator = CGFloat(views.count)
-        let diffFrom2PI = abs(abs(endAngle - startAngle) - .pi*2)
-        if 0.01 < diffFrom2PI {
-            denominator -= 1.0
-        }
-        let angleStep = (1.0 / denominator) * (endAngle - startAngle)
-        var positions = [ChildPosition]()
-        for index in 0..<views.count {
-            let offsetAngle = startAngle + angleStep * CGFloat(index)
-            let offset = CGSize(width: radius * cos(offsetAngle), height: radius * sin(offsetAngle))
-            let rotationAngle = Double(offsetAngle) + .pi/2
-            positions.append(ChildPosition(offset: offset, upIsOutwardAngle: Angle(radians: rotationAngle)))
-        }
-        
-        self.childPositions = positions
     }
     
 }
